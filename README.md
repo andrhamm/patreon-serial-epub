@@ -89,10 +89,10 @@ Post bodies are cached as JSON under `content/posts/` and are the source of trut
 
 ## Multiple books
 
-Point `DCC_CONFIG` at a different config file:
+Point `PSE_CONFIG` at a different config file:
 
 ```bash
-DCC_CONFIG=./other-book.config.json npm run update
+PSE_CONFIG=./other-book.config.json npm run update
 ```
 
 Copy `book.config.example.json` as a starting point, or run `init` and rename the result. Cached posts are shared across configs, so switching books doesn't re-download anything.

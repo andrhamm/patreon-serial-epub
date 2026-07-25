@@ -20,7 +20,7 @@ const OTP_SELECTOR = [
  */
 async function autofill(page) {
   const { resolveItem, credentials, totp } = await import('./op.mjs')
-  const item = await resolveItem(process.env.DCC_OP_ITEM)
+  const item = await resolveItem(process.env.PSE_OP_ITEM)
   const { username, password } = credentials(item)
   if (!username || !password) throw new Error('item has no username or password field')
 

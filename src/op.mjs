@@ -29,7 +29,7 @@ export async function resolveItem(override) {
 
   if (matches.length === 0) {
     throw new Error(
-      `No 1Password item has a ${SITE} URL. Add one to the item, or set DCC_OP_ITEM=<id>.`,
+      `No 1Password item has a ${SITE} URL. Add one to the item, or set PSE_OP_ITEM=<id>.`,
     )
   }
 
@@ -37,7 +37,7 @@ export async function resolveItem(override) {
   matches.forEach((m, n) => console.log(`  ${n + 1}) ${m.title} — vault ${m.vault?.name}`))
 
   if (!process.stdin.isTTY) {
-    throw new Error('Multiple matches and no terminal to ask. Re-run with DCC_OP_ITEM=<id>.')
+    throw new Error('Multiple matches and no terminal to ask. Re-run with PSE_OP_ITEM=<id>.')
   }
 
   const rl = createInterface({ input: process.stdin, output: process.stdout })

@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { ROOT } from './paths.mjs'
 
-export const CONFIG_PATH = process.env.DCC_CONFIG ?? join(ROOT, 'book.config.json')
+export const CONFIG_PATH = process.env.PSE_CONFIG ?? join(ROOT, 'book.config.json')
 
 export const DEFAULT_CONFIG = {
   creatorSlug: '',
