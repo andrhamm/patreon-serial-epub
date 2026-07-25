@@ -1,0 +1,23 @@
+{
+  "_comment": "Example config. Run `npm run init` to generate your own book.config.json — you should not need to edit this by hand.",
+
+  "creatorSlug": "dinniman",
+  "campaignId": "3918099",
+
+  "title": "Dungeon Crawler Carl, Book 9: The Beautiful Place",
+  "author": "Matt Dinniman",
+  "outputName": "dcc-book9",
+
+  "_anchorPostId": "The first post of the book. Nothing published before it is ever included.",
+  "anchorPostId": "161204295",
+
+  "_include": "Post titles matching this (case-insensitive regex) count as story content.",
+  "include": "book\\s*9|beautiful place|chapter|interlude|prologue|epilogue",
+
+  "_exclude": "Applied after include; drops announcements that mention chapters in passing.",
+  "exclude": "poll|tour|kickstarter|merch|giveaway|webtoon|audiobook",
+
+  "_overrides": "Escape hatches for posts the filters get wrong. Post ids as strings.",
+  "extraPostIds": [],
+  "skipPostIds": []
+}

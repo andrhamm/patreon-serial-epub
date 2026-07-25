@@ -1,0 +1,23 @@
+{
+  "name": "patreon-serial-epub",
+  "version": "1.0.0",
+  "description": "Compile a serialized book from Patreon posts you have access to into an epub for personal offline reading.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "setup": "node src/setup.mjs",
+    "login": "node src/login.mjs",
+    "init": "node src/init.mjs",
+    "list": "node src/list.mjs",
+    "fetch": "node src/fetch.mjs",
+    "build": "node src/build.mjs",
+    "update": "node src/update.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.0"
+  }
+}

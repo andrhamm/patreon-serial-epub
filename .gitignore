@@ -1,0 +1,7 @@
+node_modules/
+.auth/
+content/
+out/
+*.epub
+book.config.json
+.DS_Store
