@@ -36,6 +36,7 @@ Downloads a serialized book from Patreon posts the operator pays for and compile
 | Call the API via `page.evaluate(fetch)` | carries the real cookie jar | 401s despite a valid session |
 | Read bodies from `content_json_string` | the `content` HTML field is `null` now | "no text in the post" for every post |
 | One process per `.auth/ff-profile` | profile lock | launch fails; fix with `pkill -f ff-profile` |
+| Keep the `CFFIXED_USER_HOME` private home in `browser.mjs` | macOS 27 TCC-blocks Firefox's app-data lookup, even with `-profile` | launch hangs 180 s then times out, or `Could not find profile folder` |
 
 ## Changing which posts get included
 

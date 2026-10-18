@@ -1,16 +1,21 @@
 import { firefox } from 'playwright'
 import { mkdirSync } from 'node:fs'
-import { PROFILE_DIR } from './paths.mjs'
+import { PROFILE_DIR, HOME_DIR } from './paths.mjs'
 
 export { PROFILE_DIR }
 
 /** Launch Firefox with the persistent profile that holds the Patreon session. */
 export async function launch(headless) {
   mkdirSync(PROFILE_DIR, { recursive: true })
+  // shortcut: macOS 27 TCC-protects ~/Library/Application Support/Firefox and Firefox
+  // reads it even with -profile (playwright#42768), so give it a private home.
+  // Drop once Playwright ships Firefox 158+.
+  mkdirSync(HOME_DIR, { recursive: true })
   try {
     return await firefox.launchPersistentContext(PROFILE_DIR, {
       headless,
       viewport: { width: 1280, height: 900 },
+      env: { ...process.env, CFFIXED_USER_HOME: HOME_DIR },
     })
   } catch (err) {
     if (/Executable doesn't exist|Please run the following command/i.test(err.message)) {
