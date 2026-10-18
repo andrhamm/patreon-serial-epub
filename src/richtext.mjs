@@ -28,7 +28,8 @@ function block(node) {
       return (node.content ?? []).map(inline).join('')
     case 'heading': {
       const level = node.attrs?.level ?? 2
-      return `${'#'.repeat(level)} ${(node.content ?? []).map(inline).join('')}`
+      // The post title is the H1, so author headings nest one level below it.
+      return `${'#'.repeat(Math.min(level + 1, 6))} ${(node.content ?? []).map(inline).join('')}`
     }
     case 'blockquote':
       return (node.content ?? [])
