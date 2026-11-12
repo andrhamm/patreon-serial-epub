@@ -19,5 +19,10 @@
 
   "_overrides": "Escape hatches for posts the filters get wrong. Post ids as strings.",
   "extraPostIds": [],
-  "skipPostIds": []
+  "skipPostIds": [],
+
+  "_collectionUrl": "Optional. Build from a Patreon collection instead: it replaces anchorPostId, include and exclude. skipPostIds still applies; extraPostIds adds posts the collection lacks (published order only).",
+  "collectionUrl": "",
+  "_collectionOrder": "published (by date), collection (as the creator arranged it), or collection-reversed.",
+  "collectionOrder": "published"
 }

@@ -11,7 +11,7 @@ import {
 import { join } from 'node:path'
 import { launch, isLoggedIn } from './browser.mjs'
 import { apiGet } from './api.mjs'
-import { listPosts } from './posts.mjs'
+import { listPosts, listCollection } from './posts.mjs'
 import { loadConfig } from './config.mjs'
 import { docToMarkdown } from './richtext.mjs'
 import { RAW_DIR, CH_DIR } from './paths.mjs'
@@ -33,6 +33,39 @@ function selectPosts(all, anchor, cfg) {
     .filter((p) => extra.has(p.id) || (include.test(p.title) && !exclude.test(p.title)))
     // Ties broken by id so ordering never depends on the order the API replied in.
     .sort((a, b) => a.publishedAt.localeCompare(b.publishedAt) || a.id.localeCompare(b.id))
+}
+
+/** The book as the title filters see it in the creator's feed. */
+async function feedPosts(page, cfg) {
+  const all = await listPosts(page, cfg.campaignId, { max: 400 })
+  const anchor = all.find((p) => p.id === cfg.anchorPostId)
+  if (!anchor) {
+    throw new Error(
+      `Could not find the starting post (id ${cfg.anchorPostId}) in this creator's feed.\n` +
+        'It may have been deleted, or the config may point at the wrong creator.\n' +
+        'Re-run:  npm run init',
+    )
+  }
+
+  const selected = selectPosts(all, anchor, cfg)
+  console.log(`${selected.length} story post(s) from ${anchor.publishedAt.slice(0, 10)} onward.`)
+  return selected
+}
+
+/**
+ * The book as a creator's collection defines it. The collection already says
+ * which posts belong, so the anchor and title filters don't apply; the
+ * extraPostIds / skipPostIds overrides still do.
+ */
+async function collectionPosts(page, cfg) {
+  const skip = new Set(cfg.skipPostIds ?? [])
+  const selected = (await listCollection(page, cfg)).filter((p) => !skip.has(p.id))
+  const added = selected.filter((p) => p.extra).length
+  console.log(
+    `${selected.length} post(s) from collection ${cfg.collectionId}, in ${cfg.collectionOrder} order` +
+      (added ? ` (${added} added from extraPostIds).` : '.'),
+  )
+  return selected
 }
 
 /** Cached post body -> markdown, with chapter breaks promoted to headings. */
@@ -72,18 +105,9 @@ await main(async () => {
       throw new Error('Not logged into Patreon. Run:  npm run login')
     }
 
-    const all = await listPosts(page, cfg.campaignId, { max: 400 })
-    const anchor = all.find((p) => p.id === cfg.anchorPostId)
-    if (!anchor) {
-      throw new Error(
-        `Could not find the starting post (id ${cfg.anchorPostId}) in this creator's feed.\n` +
-          'It may have been deleted, or the config may point at the wrong creator.\n' +
-          'Re-run:  npm run init',
-      )
-    }
-
-    const selected = selectPosts(all, anchor, cfg)
-    console.log(`${selected.length} story post(s) from ${anchor.publishedAt.slice(0, 10)} onward.`)
+    const selected = cfg.collectionId
+      ? await collectionPosts(page, cfg)
+      : await feedPosts(page, cfg)
 
     let downloaded = 0
     let locked = 0
