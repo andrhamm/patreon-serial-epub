@@ -15,6 +15,16 @@ export const DEFAULT_CONFIG = {
   exclude: 'poll|tour|kickstarter|merch|giveaway|q&a|announcement',
   extraPostIds: [],
   skipPostIds: [],
+  collectionUrl: '',
+  collectionOrder: 'published',
+}
+
+export const COLLECTION_ORDERS = ['published', 'collection', 'collection-reversed']
+
+/** patreon.com/collection/<id> URL, or a bare id -> the numeric id, else null. */
+export function collectionIdFrom(url) {
+  const s = String(url).trim()
+  return (/^(\d+)$/.exec(s) ?? /patreon\.com\/collection\/(\d+)/i.exec(s))?.[1] ?? null
 }
 
 export function configExists() {
@@ -36,7 +46,24 @@ export function loadConfig() {
   }
 
   const cfg = { ...DEFAULT_CONFIG, ...parsed }
-  for (const required of ['campaignId', 'anchorPostId', 'title']) {
+  cfg.collectionId = null
+  if (cfg.collectionUrl) {
+    cfg.collectionId = collectionIdFrom(cfg.collectionUrl)
+    if (!cfg.collectionId) {
+      throw new Error(
+        `The "collectionUrl" in ${CONFIG_PATH} is not a Patreon collection link.\n` +
+          'It should look like  https://www.patreon.com/collection/1234567',
+      )
+    }
+    if (!COLLECTION_ORDERS.includes(cfg.collectionOrder)) {
+      throw new Error(
+        `The "collectionOrder" in ${CONFIG_PATH} must be one of: ${COLLECTION_ORDERS.join(', ')}.`,
+      )
+    }
+  }
+  // A collection decides where the book starts, so it needs no anchor post.
+  const needed = cfg.collectionId ? ['campaignId', 'title'] : ['campaignId', 'anchorPostId', 'title']
+  for (const required of needed) {
     if (!cfg[required]) {
       throw new Error(`${CONFIG_PATH} is missing "${required}". Re-run:  npm run init`)
     }

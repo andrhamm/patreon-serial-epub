@@ -61,6 +61,23 @@ npm run list 15
 
 If a story post is missing, add its id to `extraPostIds` in `book.config.json`. If something that isn't a chapter got included, add its id to `skipPostIds`. These overrides beat the title matching, so reach for them before touching the `include` / `exclude` patterns.
 
+**The author posts out of order, or titles are too messy to match.** If the creator keeps a Patreon collection for the book, build from that instead. Add its link to `book.config.json`:
+
+```json
+"collectionUrl": "https://www.patreon.com/collection/1234567",
+"collectionOrder": "published"
+```
+
+The collection then decides which posts are in the book. The starting post and the `include` / `exclude` patterns are ignored, and so is `extraPostIds`. `skipPostIds` still works. `collectionOrder` picks the reading order:
+
+| Value | Order |
+|---|---|
+| `published` (default) | oldest post first, by publish date |
+| `collection` | exactly as the creator arranged the collection |
+| `collection-reversed` | the creator's arrangement, last to first. Use this for collections kept newest-first |
+
+Run `npm run list 200` to hear the whole collection read out in book order, numbered, before you build. Collections are maintained by hand: if a chapter is missing from the epub, check whether it is missing from the collection itself.
+
 **"your tier cannot read it"** — that post is above your membership level. Nothing to fix here.
 
 **The browser won't start** — a previous run may still have it open: `pkill -f ff-profile`.
@@ -80,7 +97,7 @@ It finds the item whose URL matches `patreon.com`, prompts for your fingerprint,
 ```
 npm run login     Firefox + persistent profile in .auth/  → Patreon session
 npm run init      resolve creator → campaign id, pick anchor post → book.config.json
-npm run fetch     list posts → filter to the book → download bodies → content/
+npm run fetch     list posts (feed or collection) → filter to the book → download bodies → content/
 npm run build     content/chapters/*.md → pandoc → out/<name>.epub
 npm run update    fetch + build
 ```

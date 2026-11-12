@@ -1,6 +1,6 @@
 import { launch, isLoggedIn } from './browser.mjs'
 import { loadConfig } from './config.mjs'
-import { listPosts } from './posts.mjs'
+import { listPosts, orderCollection } from './posts.mjs'
 import { main } from './cli.mjs'
 
 await main(async () => {
@@ -15,6 +15,24 @@ await main(async () => {
     const page = ctx.pages()[0] ?? (await ctx.newPage())
     if (!(await isLoggedIn(page))) {
       throw new Error('Not logged into Patreon. Run:  npm run login')
+    }
+
+    if (cfg.collectionId) {
+      // The whole collection is needed before it can be put in reading order.
+      const all = await listPosts(page, cfg.campaignId, { collectionId: cfg.collectionId })
+      const posts = orderCollection(all, cfg.collectionOrder).slice(0, limit)
+      const skip = new Set(cfg.skipPostIds ?? [])
+      console.log(
+        `${posts.length} of ${all.length} posts in collection ${cfg.collectionId}, ` +
+          `in book order (${cfg.collectionOrder}). "skip" marks posts left out.\n`,
+      )
+      posts.forEach((p, i) => {
+        const flags = [p.canView ? '    ' : 'LOCK', skip.has(p.id) ? 'skip' : '    ']
+        console.log(
+          `${String(i + 1).padStart(3)}  ${p.id}  ${p.publishedAt.slice(0, 10)}  ${flags.join(' ')}  ${p.title}`,
+        )
+      })
+      return
     }
 
     const posts = await listPosts(page, cfg.campaignId, { max: limit })
