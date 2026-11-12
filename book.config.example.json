@@ -21,7 +21,7 @@
   "extraPostIds": [],
   "skipPostIds": [],
 
-  "_collectionUrl": "Optional. Build from a Patreon collection instead: it replaces anchorPostId, include, exclude and extraPostIds. skipPostIds still applies.",
+  "_collectionUrl": "Optional. Build from a Patreon collection instead: it replaces anchorPostId, include and exclude. skipPostIds still applies; extraPostIds adds posts the collection lacks (published order only).",
   "collectionUrl": "",
   "_collectionOrder": "published (by date), collection (as the creator arranged it), or collection-reversed.",
   "collectionOrder": "published"

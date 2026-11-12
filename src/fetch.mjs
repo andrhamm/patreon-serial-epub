@@ -11,7 +11,7 @@ import {
 import { join } from 'node:path'
 import { launch, isLoggedIn } from './browser.mjs'
 import { apiGet } from './api.mjs'
-import { listPosts, orderCollection } from './posts.mjs'
+import { listPosts, listCollection } from './posts.mjs'
 import { loadConfig } from './config.mjs'
 import { docToMarkdown } from './richtext.mjs'
 import { RAW_DIR, CH_DIR } from './paths.mjs'
@@ -54,25 +54,17 @@ async function feedPosts(page, cfg) {
 
 /**
  * The book as a creator's collection defines it. The collection already says
- * which posts belong, so the anchor and title filters don't apply; skipPostIds
- * still does.
+ * which posts belong, so the anchor and title filters don't apply; the
+ * extraPostIds / skipPostIds overrides still do.
  */
 async function collectionPosts(page, cfg) {
-  const all = await listPosts(page, cfg.campaignId, { collectionId: cfg.collectionId })
-  if (all.length === 0) {
-    throw new Error(
-      `Collection ${cfg.collectionId} has no posts you can see.\n` +
-        'Check that "collectionUrl" and "campaignId" in your config belong to the same creator.',
-    )
-  }
   const skip = new Set(cfg.skipPostIds ?? [])
-  const selected = orderCollection(all.filter((p) => !skip.has(p.id)), cfg.collectionOrder)
+  const selected = (await listCollection(page, cfg)).filter((p) => !skip.has(p.id))
+  const added = selected.filter((p) => p.extra).length
   console.log(
-    `${selected.length} post(s) from collection ${cfg.collectionId}, in ${cfg.collectionOrder} order.`,
+    `${selected.length} post(s) from collection ${cfg.collectionId}, in ${cfg.collectionOrder} order` +
+      (added ? ` (${added} added from extraPostIds).` : '.'),
   )
-  if (cfg.extraPostIds?.length) {
-    console.log('  note: extraPostIds is ignored when using a collection.')
-  }
   return selected
 }
 

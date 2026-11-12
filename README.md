@@ -68,7 +68,7 @@ If a story post is missing, add its id to `extraPostIds` in `book.config.json`. 
 "collectionOrder": "published"
 ```
 
-The collection then decides which posts are in the book. The starting post and the `include` / `exclude` patterns are ignored, and so is `extraPostIds`. `skipPostIds` still works. `collectionOrder` picks the reading order:
+The collection then decides which posts are in the book. The starting post and the `include` / `exclude` patterns are ignored. `skipPostIds` still works, and so does `extraPostIds` for posts the collection is missing — but only with `"collectionOrder": "published"`, since a creator's own arrangement has no place to put a post it doesn't contain. `collectionOrder` picks the reading order:
 
 | Value | Order |
 |---|---|
@@ -76,7 +76,7 @@ The collection then decides which posts are in the book. The starting post and t
 | `collection` | exactly as the creator arranged the collection |
 | `collection-reversed` | the creator's arrangement, last to first. Use this for collections kept newest-first |
 
-Run `npm run list 200` to hear the whole collection read out in book order, numbered, before you build. Collections are maintained by hand: if a chapter is missing from the epub, check whether it is missing from the collection itself.
+Run `npm run list 200` to hear the whole collection read out in book order, numbered, before you build. Collections are maintained by hand: if a chapter is missing from the epub, check whether it is missing from the collection itself, then ask the creator to add it or add its id to `extraPostIds`.
 
 **"your tier cannot read it"** — that post is above your membership level. Nothing to fix here.
 

@@ -1,6 +1,6 @@
 import { launch, isLoggedIn } from './browser.mjs'
 import { loadConfig } from './config.mjs'
-import { listPosts, orderCollection } from './posts.mjs'
+import { listPosts, listCollection } from './posts.mjs'
 import { main } from './cli.mjs'
 
 await main(async () => {
@@ -19,15 +19,19 @@ await main(async () => {
 
     if (cfg.collectionId) {
       // The whole collection is needed before it can be put in reading order.
-      const all = await listPosts(page, cfg.campaignId, { collectionId: cfg.collectionId })
-      const posts = orderCollection(all, cfg.collectionOrder).slice(0, limit)
+      const all = await listCollection(page, cfg)
+      const posts = all.slice(0, limit)
       const skip = new Set(cfg.skipPostIds ?? [])
       console.log(
         `${posts.length} of ${all.length} posts in collection ${cfg.collectionId}, ` +
-          `in book order (${cfg.collectionOrder}). "skip" marks posts left out.\n`,
+          `in book order (${cfg.collectionOrder}). "skip" marks posts left out, ` +
+          `"extra" marks posts added from extraPostIds.\n`,
       )
       posts.forEach((p, i) => {
-        const flags = [p.canView ? '    ' : 'LOCK', skip.has(p.id) ? 'skip' : '    ']
+        const flags = [
+          p.canView ? '    ' : 'LOCK',
+          skip.has(p.id) ? 'skip ' : p.extra ? 'extra' : '     ',
+        ]
         console.log(
           `${String(i + 1).padStart(3)}  ${p.id}  ${p.publishedAt.slice(0, 10)}  ${flags.join(' ')}  ${p.title}`,
         )
